@@ -13,6 +13,7 @@ const Home = lazy(() => import("./routes/home"));
 const Articles = lazy(() => import("./routes/blog/articles"));
 const Article = lazy(() => import("./routes/blog/article"));
 const Signin = lazy(() => import("./routes/auth/signin"));
+const Signup = lazy(() => import("./routes/auth/signup"));
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -36,6 +37,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               {
                 path: "/auth/signin",
                 element: <Signin />,
+              },
+              {
+                path: "/auth/signup",
+                element: <Signup />,
               },
             ])}
           />

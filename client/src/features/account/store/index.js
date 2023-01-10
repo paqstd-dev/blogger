@@ -4,7 +4,11 @@ import Cookies from "js-cookie";
 
 export const verifyAuthTokenStore = createAsyncThunk(
   "account/verifyAuthToken",
-  async () => await axios.post("/verify")
+  async () => {
+    if (!!Cookies.get("authToken")) {
+      return await axios.post("/verify");
+    }
+  }
 );
 
 const initialState = {
@@ -21,6 +25,9 @@ export const accountSlice = createSlice({
       state.authorized = true;
 
       Cookies.set("authToken", payload);
+    },
+    _setLoaded: (state) => {
+      state.loaded = true;
     },
     _setAccount: (state, { payload }) => {
       if (!!payload?.username) {
@@ -42,6 +49,9 @@ export const accountSlice = createSlice({
   extraReducers: {
     [verifyAuthTokenStore.fulfilled]: (state, action) => {
       accountSlice.caseReducers._setAccount(state, action);
+    },
+    [verifyAuthTokenStore.rejected]: (state) => {
+      accountSlice.caseReducers._setLoaded(state);
     },
   },
 });

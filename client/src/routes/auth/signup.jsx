@@ -1,11 +1,10 @@
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { signinStore, signinAction } from "../../features/account";
+import { signupAction } from "../../features/account";
 import { IconEye, IconEyeOff } from "@tabler/icons";
 
-export default function Signin() {
+export default function Signup() {
   const { register, handleSubmit } = useForm();
 
   // toggles
@@ -13,16 +12,14 @@ export default function Signin() {
   const toggleShowPassword = () => setShowPassword(!showPassword);
   const [error, setError] = useState(false);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onSubmit = (form) => {
     setError(false);
 
-    signinAction(form)
-      .then((response) => {
-        dispatch(signinStore(response.auth_token));
-        navigate("/");
+    signupAction(form)
+      .then(() => {
+        navigate("/auth/signin");
       })
       .catch(() => setError(true));
   };
@@ -33,7 +30,7 @@ export default function Signin() {
         <div className="container container-tight py-4">
           <div className="card">
             <div className="card-header">
-              <h3 className="card-title h2">Авторизация</h3>
+              <h3 className="card-title h2">Регистрация</h3>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -73,12 +70,11 @@ export default function Signin() {
 
                 {error && (
                   <div className="alert alert-danger">
-                    Имя пользователя или пароль указан неправильно! Повторите
-                    попытку.
+                    Произошла ошибка! Попробуйте еще раз.
                   </div>
                 )}
 
-                <Link to="/auth/signup">У меня еще нет аккаунта</Link>
+                <Link to="/auth/signin">У меня уже есть аккаунт</Link>
               </div>
 
               <div className="card-footer d-flex justify-content-between">

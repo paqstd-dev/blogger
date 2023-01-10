@@ -54,9 +54,9 @@ export default function Header({ logo, links }) {
             </div>
           ) : (
             <div className="nav-item">
-              <a href="/auth/signin" className="nav-link">
+              <Link to="/auth/signin" className="nav-link">
                 Войти в аккаунт
-              </a>
+              </Link>
             </div>
           )}
         </div>
