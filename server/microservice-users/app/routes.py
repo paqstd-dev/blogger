@@ -2,7 +2,7 @@ import hashlib
 import jwt
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from sqlmodel import Session, select
 
 from .database import engine
@@ -58,16 +58,17 @@ def authorize_user(user: User):
 
 
 @router.post("/verify", response_model=UserResponse)
-def check_token(token: Token):
+def check_token(x_auth_token: str = Header(default=None)):
     with Session(engine) as session:
         # check exist token in db?
-        if not (exist_token := session.exec(select(Token).where(Token.auth_token == token.auth_token)).one_or_none()):
+        if not (exist_token := session.exec(select(Token).where(Token.auth_token == x_auth_token)).one_or_none()):
             raise HTTPException(status_code=400, detail="Auth token is incorrect!")
 
         # check expire date for token
-        decoded_token = jwt.decode(exist_token.auth_token, SECRET_KEY, algorithms=["HS256"])
-        if decoded_token["exp"] < int(datetime.now().strftime("%s")):
-            raise HTTPException(status_code=401, detail="Autho token is expired!")
+        try:
+            decoded_token = jwt.decode(exist_token.auth_token, SECRET_KEY, algorithms=["HS256"])
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=400, detail="Token is expired!")
 
         # find user in db
         if not (existed_user := session.exec(select(User).where(User.id == decoded_token["uid"])).one_or_none()):

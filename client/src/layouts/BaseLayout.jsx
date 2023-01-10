@@ -1,22 +1,29 @@
 import Header from "../components/Header";
+import { IconBook, IconHome } from "@tabler/icons";
 
 export default function BaseLayout({ children }) {
   return (
-    <>
+    <div className="page">
       <Header
+        logo="Blogger"
         links={[
           {
-            label: "Главная",
+            icon: <IconHome />,
             link: "/",
+            equal: true,
+            label: "Главная",
           },
           {
-            label: "Статьи",
+            icon: <IconBook />,
             link: "/blog/articles",
+            label: "Cтатьи",
           },
         ]}
       />
 
-      {children}
-    </>
+      <div className="page-wrapper">
+        <div className="container-xl pt-3">{children}</div>
+      </div>
+    </div>
   );
 }
