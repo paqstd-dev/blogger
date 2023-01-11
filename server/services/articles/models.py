@@ -42,3 +42,5 @@ class ArticleUpdate(SQLModel):
 class ArticleRead(ArticleBase):
     id: int
     user: Optional["UserRead"] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None

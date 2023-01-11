@@ -35,7 +35,7 @@ def create_article(*, session = Depends(get_session), article: ArticleCreate, cu
     # check current slug in db?
     checks = 0
     while checks < 10:
-        if session.exec(select(Article).where(Article.slug == article.slug)).one_or_none():
+        if session.exec(select(Article).where(Article.slug == db_article.slug)).one_or_none():
             db_article.slug += random.sample((string.ascii_lowercase + string.digits + "-_"), 1)[0]
         else:
             break
