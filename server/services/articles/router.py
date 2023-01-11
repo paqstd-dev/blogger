@@ -1,81 +1,76 @@
 import string
 import random
 from slugify import slugify
-from typing import List, Any
+from typing import List
 from fastapi import APIRouter, HTTPException, Depends
-from sqlmodel import Session, select
+from sqlmodel import select
 
-from database import engine
-from .models import Article
-
-# import from other service
+from .models import Article, ArticleRead, ArticleCreate, ArticleUpdate
+from app.dependencies import get_session
 from services.users.dependencies import User, get_current_user
 
 
 router = APIRouter()
 
 
-@router.get("/")
-def get_list_articles() -> List[Article]:
-    with Session(engine) as session:
-        return session.exec(select(Article)).all()
+@router.get("/", response_model = List[ArticleRead])
+def get_list_articles(*, session = Depends(get_session)):
+    return session.exec(select(Article)).all()
 
 
-@router.get("/{article_slug}")
-def get_article_by_slug(article_slug: str) -> Article | Any:
-    with Session(engine) as session:
-        if not (article := session.exec(select(Article).where(Article.slug == article_slug)).one_or_none()):
-            raise HTTPException(status_code=404, detail="Not Found!")
+@router.get("/{article_slug}", response_model = ArticleRead)
+def get_article_by_slug(*, session=Depends(get_session), article_slug: str):
+    if not (article := session.exec(select(Article).where(Article.slug == article_slug)).one_or_none()):
+        raise HTTPException(status_code=404, detail="Not Found!")
 
-        return article
+    return article
 
 
 @router.post("/create", status_code=201)
-def create_article(article: Article, current_user: User = Depends(get_current_user)):
-    with Session(engine) as session:
-        article.slug = slugify(article.title)
-        article.user_id = current_user.id
+def create_article(*, session = Depends(get_session), article: ArticleCreate, current_user: User = Depends(get_current_user)):
+    db_article = Article.from_orm(article)
+    db_article.slug = slugify(article.title)
+    db_article.user_id = current_user.id
 
-        # check current slug in db?
-        checks = 0
-        while checks < 10:
-            if session.exec(select(Article).where(Article.slug == article.slug)).one_or_none():
-                article.slug += random.sample((string.ascii_lowercase + string.digits + "-_"), 1)
-            else:
-                break
+    # check current slug in db?
+    checks = 0
+    while checks < 10:
+        if session.exec(select(Article).where(Article.slug == article.slug)).one_or_none():
+            db_article.slug += random.sample((string.ascii_lowercase + string.digits + "-_"), 1)[0]
         else:
-            raise HTTPException(status_code=400, detail="The system has a lot of articles with a similar title. Try changing and retry the request!")
+            break
+    else:
+        raise HTTPException(status_code=400, detail="The system has a lot of articles with a similar title. Try changing and retry the request!")
 
-        session.add(article)
-        session.commit()
+    session.add(db_article)
+    session.commit()
 
-        return {
-            "slug": article.slug
-        }
+    return {
+        "slug": db_article.slug
+    }
 
 
 @router.put("/{article_slug}")
-def update_article_by_slug(article_slug: str, article: Article, current_user: User = Depends(get_current_user)):
-    with Session(engine) as session:
-        if not (selected_article := session.exec(select(Article).where(Article.slug == article_slug, Article.user_id == current_user.id)).one_or_none()):
-            raise HTTPException(status_code=404, detail="Not Found!")
+def update_article_by_slug(*, session = Depends(get_session), article_slug: str, article: ArticleUpdate, current_user: User = Depends(get_current_user)):
+    if not (db_article := session.exec(select(Article).where(Article.slug == article_slug, Article.user_id == current_user.id)).one_or_none()):
+        raise HTTPException(status_code=404, detail="Not Found!")
 
-        selected_article.title = article.title
-        selected_article.content = article.content
+    article_data = article.dict(exclude_unset=True)
+    for key, value in article_data.items():
+        setattr(db_article, key, value)
 
-        session.add(selected_article)
-        session.commit()
+    session.add(db_article)
+    session.commit()
 
-        return {
-            "slug": selected_article.slug
-        }
+    return {
+        "slug": db_article.slug
+    }
 
 
 @router.delete("/{article_slug}", status_code=204)
-def delete_article_by_slug(article_slug: str, current_user: User = Depends(get_current_user)):
-    with Session(engine) as session:
-        if not (selected_article := session.exec(select(Article).where(Article.slug == article_slug, Article.user_id == current_user.id)).one_or_none()):
-            raise HTTPException(status_code=404, detail="Not Found!")
+def delete_article_by_slug(*, session=Depends(get_session), article_slug: str, current_user: User = Depends(get_current_user)):
+    if not (selected_article := session.exec(select(Article).where(Article.slug == article_slug, Article.user_id == current_user.id)).one_or_none()):
+        raise HTTPException(status_code=404, detail="Not Found!")
 
-        session.delete(selected_article)
-        session.commit()
+    session.delete(selected_article)
+    session.commit()

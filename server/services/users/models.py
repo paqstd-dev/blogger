@@ -1,17 +1,24 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional, List
+from sqlmodel import Field, SQLModel, Relationship
 
-from sqlmodel import Field, SQLModel
+
+if TYPE_CHECKING:
+    from services.articles.models import Article
 
 
-class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class UserBase(SQLModel):
     username: str = Field(index=True)
+
+
+class User(UserBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     password: str
 
+    articles:  List["Article"] = Relationship(back_populates="user")
 
-class UserResponse(SQLModel):
-    id: int
-    username: str
+
+class UserRead(UserBase):
+    pass
 
 
 class Token(SQLModel, table=True):
