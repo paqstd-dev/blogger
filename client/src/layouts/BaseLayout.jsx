@@ -1,7 +1,8 @@
-import Header from "../components/Header";
 import { IconBook, IconHome } from "@tabler/icons";
+import Header from "components/Header";
+import PageHeader from "components/PageHeader";
 
-export default function BaseLayout({ children }) {
+export default function BaseLayout({ children, header }) {
   return (
     <div className="page">
       <Header
@@ -22,7 +23,11 @@ export default function BaseLayout({ children }) {
       />
 
       <div className="page-wrapper">
-        <div className="container-xl pt-3">{children}</div>
+        <div className="container-xl">
+          {header && <PageHeader {...header} />}
+
+          <div className="page-body">{children}</div>
+        </div>
       </div>
     </div>
   );

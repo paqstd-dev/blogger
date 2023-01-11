@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { signupAction } from "features/account";
+import { signupAccount } from "features/account";
 import { IconEye, IconEyeOff } from "@tabler/icons";
 
 export default function Signup() {
@@ -17,7 +17,7 @@ export default function Signup() {
   const onSubmit = (form) => {
     setError(false);
 
-    signupAction(form)
+    signupAccount(form)
       .then(() => {
         navigate("/auth/signin");
       })

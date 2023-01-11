@@ -10,6 +10,9 @@ export default function Home() {
           </h3>
 
           <p className="text-muted">Сделано на React и FastAPI.</p>
+          <p>
+            Любой может авторизованный пользователь может публиковать статьи.
+          </p>
         </div>
       </div>
     </BaseLayout>

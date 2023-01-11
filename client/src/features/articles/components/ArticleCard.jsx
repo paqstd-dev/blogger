@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import moment from "lib/moment";
 
 export function ArticleCard({
@@ -9,6 +10,8 @@ export function ArticleCard({
   user,
   created_at,
 }) {
+  const { authorized, username } = useSelector(({ account }) => account);
+
   return (
     <div className="card">
       <img />
@@ -23,9 +26,18 @@ export function ArticleCard({
       <div className="card-footer">
         <div className="d-flex justify-content-between align-items-center">
           <div>{moment(created_at).fromNow()}</div>
-          <Link to={`/blog/articles/${slug}`} className="btn">
-            Читать
-          </Link>
+
+          <div className="btn-list">
+            {authorized && user.username === username && (
+              <Link to={`/blog/update/${slug}`} className="btn">
+                Изменить
+              </Link>
+            )}
+
+            <Link to={`/blog/articles/${slug}`} className="btn">
+              Читать
+            </Link>
+          </div>
         </div>
       </div>
     </div>

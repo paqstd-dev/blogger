@@ -11,6 +11,8 @@ import { Provider } from "react-redux";
 const Home = lazy(() => import("routes/home"));
 const Articles = lazy(() => import("routes/blog/articles"));
 const Article = lazy(() => import("routes/blog/article"));
+const CreateArticle = lazy(() => import("routes/blog/create"));
+const UpdateArticle = lazy(() => import("routes/blog/update"));
 const Signin = lazy(() => import("routes/auth/signin"));
 const Signup = lazy(() => import("routes/auth/signup"));
 
@@ -28,6 +30,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               {
                 path: "/blog/articles",
                 element: <Articles />,
+              },
+              {
+                path: "/blog/create",
+                element: <CreateArticle />,
+              },
+              {
+                path: "/blog/update/:slug",
+                element: <UpdateArticle />,
               },
               {
                 path: "/blog/articles/:slug",

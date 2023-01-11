@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { signinStore, signinAction } from "features/account";
+import { signinStore, signinAccount } from "features/account";
 import { IconEye, IconEyeOff } from "@tabler/icons";
 
 export default function Signin() {
@@ -19,7 +19,7 @@ export default function Signin() {
   const onSubmit = (form) => {
     setError(false);
 
-    signinAction(form)
+    signinAccount(form)
       .then((response) => {
         dispatch(signinStore(response.auth_token));
         navigate("/");

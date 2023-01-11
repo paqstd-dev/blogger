@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "../../../lib/axios";
+import { verifyAccount } from "features/account";
 import Cookies from "js-cookie";
 
 export const verifyAuthTokenStore = createAsyncThunk(
   "account/verifyAuthToken",
   async () => {
     if (!!Cookies.get("authToken")) {
-      return await axios.post("/verify");
+      return await verifyAccount();
     }
   }
 );
