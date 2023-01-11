@@ -3,6 +3,7 @@ import {
   ArticleForm,
   getArticleBySlug,
   updateArticle,
+  deleteArticle,
 } from "features/articles";
 import { useEffect, useState } from "react";
 import BaseLayout from "layouts/BaseLayout";
@@ -31,6 +32,12 @@ export default function UpdateArticle() {
     }
   };
 
+  const onDelete = async () => {
+    await deleteArticle(slug);
+
+    navigate("/blog/articles");
+  };
+
   return (
     <BaseLayout
       header={{
@@ -41,7 +48,7 @@ export default function UpdateArticle() {
       {article === null ? (
         <Loading />
       ) : (
-        <ArticleForm data={article} onSubmit={onSubmit} />
+        <ArticleForm data={article} onSubmit={onSubmit} onDelete={onDelete} />
       )}
     </BaseLayout>
   );

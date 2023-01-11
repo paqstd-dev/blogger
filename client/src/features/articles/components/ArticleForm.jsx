@@ -13,6 +13,7 @@ import cn from "classnames";
 export function ArticleForm({
   data: { slug, title, description, content } = {},
   onSubmit,
+  onDelete,
 }) {
   const editor = useEditor({
     extensions: [
@@ -136,9 +137,21 @@ export function ArticleForm({
               Отмена
             </Link>
 
-            <button className="btn btn-primary" type="submit">
-              {!!slug ? "Обновить" : "Опубликовать"}
-            </button>
+            <div className="d-flex gap-2">
+              {!!onDelete && (
+                <button
+                  className="btn btn-danger"
+                  onClick={onDelete}
+                  type="button"
+                >
+                  Удалить
+                </button>
+              )}
+
+              <button className="btn btn-primary" type="submit">
+                {!!slug ? "Обновить" : "Опубликовать"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
