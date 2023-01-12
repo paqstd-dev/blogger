@@ -14,8 +14,8 @@ router = APIRouter()
 
 
 @router.get("/", response_model = List[ArticleRead])
-def get_list_articles(*, session = Depends(get_session)):
-    return session.exec(select(Article)).all()
+def get_list_articles(*, page: int, per_page: int, session = Depends(get_session)):
+    return session.exec(select(Article).offset(page * per_page).limit(per_page)).all()
 
 
 @router.get("/{article_slug}", response_model = ArticleRead)

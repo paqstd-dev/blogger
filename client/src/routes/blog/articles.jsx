@@ -2,21 +2,29 @@ import { useState, useEffect } from "react";
 import { ArticleCard, getArticlesList } from "features/articles";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { PER_PAGE } from "config";
+import debounce from "lodash.debounce";
 import BaseLayout from "layouts/BaseLayout";
+import InfiniteScroll from "react-infinite-scroller";
+import Loading from "components/Loader";
 
 export default function Articles() {
   const [articles, setArticles] = useState([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
   const { authorized } = useSelector(({ account }) => account);
 
-  useEffect(
-    () => async () => {
-      const response = await getArticlesList();
+  const loadArticles = async () => {
+    const response = await getArticlesList(page);
 
-      setArticles(response);
-    },
-    []
-  );
+    setArticles((state) => [...state, ...response]);
+    setPage((state) => state + 1);
+    setHasMore(response.length === PER_PAGE);
+  };
+
+  // load inital
+  useEffect(() => async () => await loadArticles(), []);
 
   return (
     <BaseLayout
@@ -39,13 +47,19 @@ export default function Articles() {
         ),
       }}
     >
-      <div className="row row-deck">
+      <InfiniteScroll
+        className="row row-deck"
+        pageStart={0}
+        loadMore={debounce(loadArticles, 500)}
+        hasMore={hasMore}
+        loader={<Loading />}
+      >
         {articles.map((article, index) => (
           <div className="col-lg-4 mb-3" key={index}>
             <ArticleCard {...article} />
           </div>
         ))}
-      </div>
+      </InfiniteScroll>
     </BaseLayout>
   );
 }

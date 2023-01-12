@@ -10,7 +10,7 @@ export default function Header({ logo, links }) {
   const location = useLocation();
 
   return (
-    <header className="navbar navbar-expand-md navbar-light d-print-none">
+    <header className="navbar navbar-expand-md navbar-light d-print-none sticky-top">
       <div className="container-xl">
         <button
           className="navbar-toggler"
