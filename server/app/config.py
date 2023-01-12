@@ -1,1 +1,5 @@
-SECRET_KEY = "1234_1234"
+import os
+from uuid import uuid4
+
+
+SECRET_KEY = os.environ.get("SECRET_KEY", str(uuid4()))
