@@ -1,5 +1,5 @@
 import axios from "lib/axios";
 
-export async function signinAccount(form) {
-  return await axios.post("/users/authorize", form);
+export function signinAccount(form) {
+  return axios.post("/users/authorize", form);
 }

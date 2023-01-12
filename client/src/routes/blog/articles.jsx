@@ -15,16 +15,18 @@ export default function Articles() {
 
   const { authorized } = useSelector(({ account }) => account);
 
-  const loadArticles = async () => {
-    const response = await getArticlesList(page);
-
-    setArticles((state) => [...state, ...response]);
-    setPage((state) => state + 1);
-    setHasMore(response.length === PER_PAGE);
+  const loadArticles = () => {
+    getArticlesList(page).then((response) => {
+      setArticles((state) => [...state, ...response]);
+      setPage((state) => state + 1);
+      setHasMore(response.length === PER_PAGE);
+    });
   };
 
   // load inital
-  useEffect(() => async () => await loadArticles(), []);
+  useEffect(() => {
+    loadArticles();
+  }, []);
 
   return (
     <BaseLayout

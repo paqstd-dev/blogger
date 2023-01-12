@@ -15,27 +15,20 @@ export default function UpdateArticle() {
 
   const { slug } = useParams();
 
-  useEffect(
-    () => async () => {
-      const response = await getArticleBySlug(slug);
+  useEffect(() => {
+    getArticleBySlug(slug).then((response) => setArticle(response));
+  }, []);
 
-      setArticle(response);
-    },
-    []
-  );
-
-  const onSubmit = async (form) => {
-    const response = await updateArticle(slug, form);
-
-    if (!!response?.slug) {
-      navigate("/blog/articles");
-    }
+  const onSubmit = (form) => {
+    updateArticle(slug, form).then((response) => {
+      if (!!response?.slug) {
+        navigate("/blog/articles");
+      }
+    });
   };
 
-  const onDelete = async () => {
-    await deleteArticle(slug);
-
-    navigate("/blog/articles");
+  const onDelete = () => {
+    deleteArticle(slug).then(() => navigate("/blog/articles"));
   };
 
   return (

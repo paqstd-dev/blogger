@@ -10,14 +10,9 @@ export default function Article() {
 
   const { slug } = useParams();
 
-  useEffect(
-    () => async () => {
-      const response = await getArticleBySlug(slug);
-
-      setArticle(response);
-    },
-    []
-  );
+  useEffect(() => {
+    getArticleBySlug(slug).then((response) => setArticle(response));
+  }, []);
 
   return (
     <BaseLayout header={{ pretitle: "Статьи", title: "Просмотр статьи" }}>

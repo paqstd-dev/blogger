@@ -5,12 +5,12 @@ import BaseLayout from "layouts/BaseLayout";
 export default function CreateArticle() {
   const navigate = useNavigate();
 
-  const onSubmit = async (form) => {
-    const response = await createArticle(form);
-
-    if (!!response?.slug) {
-      navigate("/blog/articles");
-    }
+  const onSubmit = (form) => {
+    createArticle(form).then((response) => {
+      if (!!response?.slug) {
+        navigate("/blog/articles");
+      }
+    });
   };
 
   return (
