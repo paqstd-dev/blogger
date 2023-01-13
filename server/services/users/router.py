@@ -36,7 +36,7 @@ def authorize_user(*, session = Depends(get_session), user: User):
         raise HTTPException(status_code=400, detail="Username or password is incorrect!")
 
     # create user token
-    issued = int(datetime.now().strftime("%s"))
+    issued = int(datetime.now().timestamp())
     expire = issued + 60 * 60 * 24
 
     auth_token = jwt.encode({

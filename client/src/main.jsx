@@ -28,7 +28,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route path="/blog/articles" element={<Articles />} />
               <Route path="/blog/articles/:slug" element={<Article />} />
               <Route path="/blog/create" element={<CreateArticle />} />
-              <Route path="/blog/update" element={<UpdateArticle />} />
+              <Route path="/blog/update/:slug" element={<UpdateArticle />} />
               <Route path="/auth/signin" element={<Signin />} />
               <Route path="/auth/signup" element={<Signup />} />
               <Route path="*" element={<Page404 />} />

@@ -35,7 +35,7 @@ export default function UpdateArticle() {
     <BaseLayout
       header={{
         pretitle: "Статьи",
-        title: "Создание статьи",
+        title: "Обновление статьи",
       }}
     >
       {article === null ? (
