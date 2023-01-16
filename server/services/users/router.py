@@ -1,12 +1,13 @@
-import hashlib
 import jwt
+from uuid import uuid4
 from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import select
 
 from app.config import SECRET_KEY
-from .models import User, Token, UserRead
+from .models import User, Token, UserForm, UserRead
+from .helpers import hashing_password
 
 from app.dependencies import get_session
 from .dependencies import get_current_user
@@ -15,22 +16,25 @@ from .dependencies import get_current_user
 router = APIRouter()
 
 
-@router.post("/create")
-def create_user(*, session=Depends(get_session), user: User):
+@router.post("/create", status_code=201, response_model=UserRead)
+def create_user(*, session=Depends(get_session), user: UserForm):
     if session.exec(select(User).where(User.username == user.username)).one_or_none():
         raise HTTPException(status_code=400, detail="Username already existed!")
 
-    hashed_password = hashlib.sha512((user.password + SECRET_KEY).encode("utf-8")).hexdigest()
+    hashed_password = hashing_password(user.password)
 
-    session.add(User(username=user.username, password=hashed_password))
+    user = User(username=user.username, password=hashed_password)
+
+    session.add(user)
     session.commit()
+    session.refresh(user)
 
-    return 201
+    return user
 
 
 @router.post("/authorize")
-def authorize_user(*, session = Depends(get_session), user: User):
-    hashed_password = hashlib.sha512((user.password + SECRET_KEY).encode("utf-8")).hexdigest()
+def authorize_user(*, session = Depends(get_session), user: UserForm):
+    hashed_password = hashing_password(user.password)
 
     if not (existed_user := session.exec(select(User).where(User.username == user.username, User.password == hashed_password)).one_or_none()):
         raise HTTPException(status_code=400, detail="Username or password is incorrect!")
@@ -40,8 +44,9 @@ def authorize_user(*, session = Depends(get_session), user: User):
     expire = issued + 60 * 60 * 24
 
     auth_token = jwt.encode({
-        "iss": "microservice-users",
+        "iss": "service-users",
         "uid": existed_user.id,
+        "unq": str(uuid4()),
         "iat": issued,
         "exp": expire
     }, SECRET_KEY, algorithm="HS256")

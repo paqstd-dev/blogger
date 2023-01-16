@@ -1,0 +1,2 @@
+
+UNAUTHORIZED = "Unauthorized!"

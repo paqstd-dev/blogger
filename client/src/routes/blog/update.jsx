@@ -16,12 +16,12 @@ export default function UpdateArticle() {
   const { slug } = useParams();
 
   useEffect(() => {
-    getArticleBySlug(slug).then((response) => setArticle(response));
+    getArticleBySlug(slug).then(({ data }) => setArticle(data));
   }, []);
 
   const onSubmit = (form) => {
-    updateArticle(slug, form).then((response) => {
-      if (!!response?.slug) {
+    updateArticle(slug, form).then(({ data }) => {
+      if (!!data?.slug) {
         navigate("/blog/articles");
       }
     });

@@ -11,7 +11,7 @@ export default function Article() {
   const { slug } = useParams();
 
   useEffect(() => {
-    getArticleBySlug(slug).then((response) => setArticle(response));
+    getArticleBySlug(slug).then(({ data }) => setArticle(data));
   }, []);
 
   return (

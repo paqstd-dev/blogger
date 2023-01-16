@@ -3,14 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { signinStore, signinAccount } from "features/account";
-import { IconEye, IconEyeOff } from "@tabler/icons";
+import { USERNAME_MIN_LENGTH, PASSWORD_MIN_LENGTH } from "config";
+import cn from "classnames";
 
 export default function Signin() {
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  // toggles
-  const [showPassword, setShowPassword] = useState(false);
-  const toggleShowPassword = () => setShowPassword(!showPassword);
   const [error, setError] = useState(false);
 
   const dispatch = useDispatch();
@@ -20,8 +22,8 @@ export default function Signin() {
     setError(false);
 
     signinAccount(form)
-      .then((response) => {
-        dispatch(signinStore(response.auth_token));
+      .then(({ data }) => {
+        dispatch(signinStore(data.auth_token));
         navigate("/");
       })
       .catch(() => setError(true));
@@ -41,34 +43,46 @@ export default function Signin() {
                 <div className="mb-3">
                   <label className="form-label">Имя пользователя</label>
                   <input
-                    {...register("username", { required: true })}
                     type="text"
-                    className="form-control"
+                    className={cn("form-control", {
+                      "is-invalid": !!errors.username,
+                    })}
                     autoComplete="off"
+                    {...register("username", {
+                      required: true,
+                      minLength: USERNAME_MIN_LENGTH,
+                    })}
                   />
+                  {!!errors.username && (
+                    <div className="invalid-feedback">
+                      {errors.username.type == "required" && "Поле обязательно"}
+                      {errors.username.type == "minLength" &&
+                        `Имя пользователя должно быть больше ${USERNAME_MIN_LENGTH} символов`}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mb-2">
                   <label className="form-label">Пароль</label>
-                  <div className="input-group input-group-flat">
-                    <input
-                      {...register("password", { required: true })}
-                      type={showPassword ? "text" : "password"}
-                      className="form-control"
-                      autoComplete="off"
-                    />
-                    <span className="input-group-text">
-                      <a
-                        onClick={toggleShowPassword}
-                        className="link-secondary"
-                        data-bs-toggle="tooltip"
-                        aria-label="Show password"
-                        data-bs-original-title="Show password"
-                      >
-                        {!showPassword ? <IconEye /> : <IconEyeOff />}
-                      </a>
-                    </span>
-                  </div>
+                  <input
+                    type="password"
+                    className={cn("form-control", {
+                      "is-invalid": !!errors.password,
+                    })}
+                    autoComplete="off"
+                    {...register("password", {
+                      required: true,
+                      minLength: PASSWORD_MIN_LENGTH,
+                    })}
+                  />
+
+                  {!!errors.password && (
+                    <div className="invalid-feedback">
+                      {errors.password.type == "required" && "Поле обязательно"}
+                      {errors.password.type == "minLength" &&
+                        `Пароль должен быть больше ${PASSWORD_MIN_LENGTH} символов`}
+                    </div>
+                  )}
                 </div>
 
                 {error && (

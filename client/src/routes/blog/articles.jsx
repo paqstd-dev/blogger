@@ -15,10 +15,10 @@ export default function Articles() {
   const { authorized } = useSelector(({ account }) => account);
 
   const loadArticles = () => {
-    getArticlesList(page).then((response) => {
-      setArticles((state) => [...state, ...response]);
+    getArticlesList(page).then(({ data }) => {
+      setArticles((state) => [...state, ...data]);
       setPage((state) => state + 1);
-      setHasMore(response.length === PER_PAGE);
+      setHasMore(data.length === PER_PAGE);
     });
   };
 

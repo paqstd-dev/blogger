@@ -6,8 +6,8 @@ export default function CreateArticle() {
   const navigate = useNavigate();
 
   const onSubmit = (form) => {
-    createArticle(form).then((response) => {
-      if (!!response?.slug) {
+    createArticle(form).then(({ data }) => {
+      if (!!data?.slug) {
         navigate("/blog/articles");
       }
     });

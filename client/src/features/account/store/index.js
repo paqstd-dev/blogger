@@ -6,7 +6,8 @@ export const verifyAuthTokenStore = createAsyncThunk(
   "account/verifyAuthToken",
   async () => {
     if (!!Cookies.get("authToken")) {
-      return await verifyAccount();
+      const response = await verifyAccount();
+      return response.data;
     }
   }
 );

@@ -5,7 +5,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import select
 
-from .models import Article, ArticleRead, ArticleCreate, ArticleUpdate
+from .models import Article, ArticleList, ArticleRead, ArticleCreate, ArticleUpdate
 from app.dependencies import get_session
 from services.users.dependencies import User, get_current_user
 
@@ -13,7 +13,7 @@ from services.users.dependencies import User, get_current_user
 router = APIRouter()
 
 
-@router.get("/", response_model = List[ArticleRead])
+@router.get("/", response_model = List[ArticleList])
 def get_list_articles(*, page: int, per_page: int, session = Depends(get_session)):
     return session.exec(select(Article).offset(page * per_page).limit(per_page)).all()
 
